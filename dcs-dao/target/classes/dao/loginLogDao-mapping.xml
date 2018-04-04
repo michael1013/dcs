@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.LoginLog">
+	<sql id="userLoginColumns">
+		id,
+		userid,
+		username,
+		mobile,
+		device,
+		token,
+		ip,
+		create_time createTime,
+		update_time updateTime,
+		del_flag delFlag
+	</sql>
+	
+	<select id="countFindList" parameterType="LoginLog" resultType="Integer">
+		SELECT
+		count(1)
+		FROM t_dcs_login_log
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+			AND username = #{username}
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND mobile = #{mobile}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" parameterType="LoginLog" resultType="LoginLog">
+		(
+		SELECT
+		<include refid="userLoginColumns" />
+		FROM t_dcs_login_log l
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+			AND username = #{username}
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND mobile = #{mobile}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="pageSize != null and pageSize != 0">
+		LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<insert id="insert" parameterType="LoginLog" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_dcs_login_log
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="mobile != null and mobile != ''">
+				mobile,
+			</if>
+			<if test="device != null and device != ''">
+				device,
+			</if>
+			<if test="token != null and token != ''">
+				token,
+			</if>
+			<if test="ip != null and ip != ''">
+				ip,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				del_flag
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="mobile != null and mobile != ''">
+				#{mobile},
+			</if>
+			<if test="device != null and device != ''">
+				#{device},
+			</if>
+			<if test="token != null and token != ''">
+				#{token},
+			</if>
+			<if test="ip != null and ip != ''">
+				#{ip},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				#{delFlag}
+			</if>
+		</trim>
+	</insert>
+	
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.Result">
+	<sql id="resultColumns">
+		id,
+		msg_en msgEn,
+		msg_cn msgCn
+	</sql>
+	<select id="findOne" resultType="Result">
+		(
+		SELECT
+		<include refid="resultColumns"></include>
+		FROM t_dcs_admin_result
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="msgEn != null and msgEn != ''">
+				AND msg_en = #{msgEn}
+			</if>
+			<if test="msgCn != null and msgCn != ''">
+				AND msg_cn = #{msgCn}
+			</if>
+		</where>
+		) LIMIT 1
+	</select>
+	<select id="findList" parameterType="Result" resultType="Result">
+		SELECT
+		<include refid="resultColumns"></include>
+		FROM t_dcs_admin_result
+	</select>
+	<insert id="insert" parameterType="Result" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_dcs_admin_result
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="id != null and id != ''">
+				id =,
+			</if>
+			<if test="msgEn != null and msgEn != ''">
+				msg_en,
+			</if>
+			<if test="msgCn != null and msgCn != ''">
+				msg_cn,
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="id != null and id != ''">
+				#{id},
+			</if>
+			<if test="msgEn != null and msgEn != ''">
+				 #{msgEn},
+			</if>
+			<if test="msgCn != null and msgCn != ''">
+				#{msgCn},
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="Result">
+		UPDATE t_dcs_admin_result
+		<set>
+			<if test="msgEn != null and msgEn != ''">
+				msg_en = #{msgEn},
+			</if>
+			<if test="msgCn != null and msgCn != ''">
+				msg_cn = #{msgCn},
+			</if>
+		</set>
+		WHERE
+		id = #{id}
+	</update>
+
+	<!-- <select id="findList" parameterType="Item" resultType="Item"> <if test="page.startIndex 
+		!= null">( </if> select <include refid="itemColumns" /> from t_dc_item <where> 
+		<if test="name != null and name != ''"> name like CONCAT('%',#{name},'%') 
+		</if> </where> <if test="page.startIndex != null"> ) limit #{page.startIndex},#{page.pageSize}; 
+		</if> </select> <select id="getFindListCount" parameterType="Item" resultType="java.lang.Integer"> 
+		select count(1) from t_dc_item <where> <if test="name != null and name != 
+		''"> name like CONCAT('%',#{name},'%') </if> </where> </select> -->
+</mapper>

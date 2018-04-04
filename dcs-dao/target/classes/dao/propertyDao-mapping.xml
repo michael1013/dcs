@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.Property">
+	<sql id="propertyColumns">
+		id,
+		gameid,
+		serverid,
+		propertyid,
+		property_name propertyName,
+		type,
+		price,
+		create_time createTime
+	</sql>
+	<select id="countFindList" parameterType="Property" resultType="Integer">
+		SELECT
+		COUNT(1) total
+		FROM t_dcs_property
+		<where>
+			<if test="gameid != null and gameid != ''">
+			AND gameid = #{gameid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="propertyid != null and propertyid != ''">
+			AND propertyid = #{propertyid}
+			</if>
+			<if test="propertyName != null and propertyName != ''">
+			AND property_name = #{propertyName}
+			</if>
+			<if test="type != null and type != ''">
+			AND type = #{type}
+			</if>
+		</where>
+	</select>
+	<select id="findList" parameterType="Property" resultType="Property">
+		(
+		SELECT
+		<include refid="propertyColumns" />
+		FROM t_dcs_property
+		<where>
+			<if test="gameid != null and gameid != ''">
+			AND gameid = #{gameid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="propertyid != null and propertyid != ''">
+			AND propertyid = #{propertyid}
+			</if>
+			<if test="propertyName != null and propertyName != ''">
+			AND property_name = #{propertyName}
+			</if>
+			<if test="type != null and type != ''">
+			AND type = #{type}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="start != null and pageSize != null">
+		LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	<insert id="insert" parameterType="Property" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_property
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="propertyid != null and propertyid != ''">
+				propertyid,
+			</if>
+			<if test="propertyName != null and propertyName != ''">
+				property_name,
+			</if>
+			<if test="gameid != null and gameid != ''">
+				gameid,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="type != null and type != ''">
+				type,
+			</if>
+			<if test="price != null and price != ''">
+				price,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="propertyid != null and propertyid != ''">
+				#{propertyid},
+			</if>
+			<if test="propertyName != null and propertyName != ''">
+				#{propertyName},
+			</if>
+			<if test="gameid != null and gameid != ''">
+				#{gameid},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="type != null and type != ''">
+				#{type},
+			</if>
+			<if test="price != null and price != ''">
+				#{price},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.CurrencyRate">
+	<sql id="currencyRateColumns">
+		id,
+		description,
+		currency,
+		rate
+	</sql>
+	<select id="findAll" resultType="CurrencyRate">
+		SELECT
+		<include refid="currencyRateColumns"></include>
+		FROM t_dcs_rate
+	</select>
+</mapper>

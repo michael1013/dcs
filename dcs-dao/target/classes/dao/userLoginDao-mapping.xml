@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.UserLogin">
+	<sql id="userLoginColumns">
+		id,
+		userid,
+		username,
+		nickname,
+		ip,
+		serverid,
+		create_time createTime,
+		log_time logTime
+	</sql>
+	
+	<select id="countFindList" parameterType="UserLogin" resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM t_dcs_userlogin_${gameid}
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+			AND username = #{username}
+			</if>
+			<if test="nickname != null and nickname != ''">
+			AND nickname = #{nickname}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="begin != null and begin != '' and end != null and end != ''">
+			AND log_time BETWEEN #{begin} AND #{end}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" parameterType="UserLogin" resultType="UserLogin">
+	(
+	SELECT
+	<include refid="userLoginColumns" />
+	FROM t_dcs_userlogin_${gameid} l
+	<where>
+		<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+			AND username = #{username}
+			</if>
+			<if test="nickname != null and nickname != ''">
+			AND nickname = #{nickname}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="begin != null and begin != '' and end != null and end != ''">
+			AND log_time BETWEEN #{begin} AND #{end}
+			</if>
+	</where>
+	<if test="orderBy != null and orderBy != ''">
+		ORDER BY ${orderBy}
+	</if>
+	)
+	<if test="start != null and pageSize != null">
+	LIMIT #{start}, #{pageSize}
+	</if>
+	</select>
+	
+	<select id="findNew" parameterType="ServerInfo" resultType="HashMap">
+		SELECT
+		date_format(i.log_time, "%Y-%m-%d") date, 
+		IFNULL(COUNT(1), 0) count
+		FROM
+		t_dcs_userinfo_${gameid} i
+		WHERE i.serverid = #{serverid}
+		AND i.log_time BETWEEN #{begin} AND #{end}
+		GROUP BY date_format(i.log_time, "%Y-%m-%d")
+	</select>
+	
+	<select id="findActive" parameterType="ServerInfo" resultType="HashMap">
+		SELECT
+		date_format(l.log_time, "%Y-%m-%d") date, 
+		IFNULL(COUNT(1), 0) count
+		FROM
+		t_dcs_userlogin_${gameid} l
+		WHERE l.serverid = #{serverid}
+		AND l.log_time BETWEEN #{begin} AND #{end}
+		GROUP BY date_format(l.log_time, "%Y-%m-%d")
+	</select>
+	
+	<select id="findStay" parameterType="ServerInfo" resultType="HashMap">
+		SELECT DISTINCT
+		#{logTime} c,
+		IFNULL(COUNT(u.userid), 0) n,
+		<foreach collection="dateList" index="index" item="date" open=""
+			separator="," close="">
+			COUNT(d${index}.userid) date${index}
+		</foreach>
+		FROM t_dcs_userinfo_${gameid} u
+		<foreach collection="dateList" index="index" item="date" open=""
+			separator="" close="">
+		LEFT JOIN (
+			SELECT DISTINCT dx.userid 
+			FROM t_dcs_userlogin_${gameid} dx 
+			WHERE dx.serverid = #{serverid}
+				AND dx.log_time BETWEEN date_add(#{logTime}, interval ${index} day)
+				AND date_add(#{logTime}, interval ${index+1} day)
+		) d${index} ON d${index}.userid = u.userid
+		</foreach>
+		<where>
+			u.userid IS NOT NULL
+			AND u.serverid = #{serverid}
+			<if test="logTime != null and logTime != ''">
+				AND u.log_time BETWEEN #{logTime} AND date_add(#{logTime}, interval 1 day)
+			</if>
+		</where>
+	</select>
+	
+	<select id="findKpi" parameterType="HashMap" resultType="UserData">
+		(
+		SELECT
+			i.game_name gameName, 
+			i.server_name serverName,
+			IFNULL(r.totalRecharge,0) totalRecharge,
+			IFNULL(rc.rechargeCount,0) rechargeCount,
+			IFNULL((rc.rechargeCount / a.count),0) permeability, 
+			IFNULL((r.totalRecharge / rc.rechargeCount),0) arppu,
+			IFNULL(n.count,0) newCount,
+			IFNULL(sn.count,0) newStay,
+			IFNULL((sn.count / n.count),0) newStayRat,
+			IFNULL(a.count,0) activeCount,
+			IFNULL(sa.count,0) activeStay,
+			IFNULL((sa.count / a.count),0) activeStayRat
+		FROM t_dcs_serverinfo i
+		LEFT JOIN (SELECT x.serverid, SUM(x.amount) totalRecharge FROM t_dcs_recharge_${gameid} x WHERE x.serverid = #{serverid} AND x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) r ON i.serverid = r.serverid
+		LEFT JOIN (SELECT DISTINCT x.serverid, count(DISTINCT x.userid) rechargeCount FROM t_dcs_recharge_${gameid} x WHERE	x.serverid = #{serverid} AND x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) rc ON i.serverid = rc.serverid
+		LEFT JOIN (SELECT ix.serverid, count(1) count FROM t_dcs_userinfo_${gameid} ix where ix.serverid = #{serverid} AND ix.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) n ON i.serverid = n.serverid
+		LEFT JOIN (SELECT i1.serverid, COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1, t_dcs_userlogin_${gameid} l1 WHERE i1.serverid = #{serverid} AND i1.userid = l1.userid AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 day), "%Y-%m-%d")) sn ON i.serverid = sn.serverid
+		LEFT JOIN (SELECT l.serverid, COUNT(DISTINCT l.userid) count FROM t_dcs_userlogin_${gameid} l WHERE l.serverid = #{serverid} AND l.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) a ON i.serverid = a.serverid
+		LEFT JOIN (SELECT i1.serverid, COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1 LEFT JOIN t_dcs_userlogin_${gameid} l1 ON  i1.userid = l1.userid AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 day), "%Y-%m-%d") WHERE i1.serverid = #{serverid} AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) sa ON i.serverid = sa.serverid
+		where i.serverid = #{serverid}
+		)LIMIT 1
+	</select>
+	
+	<select id="findMonthKpi" parameterType="HashMap" resultType="UserData">
+		(
+		SELECT
+			i.game_name gameName, 
+			i.server_name serverName,
+			IFNULL(r.totalRecharge,0) totalRecharge,
+			IFNULL(rc.rechargeCount,0) rechargeCount,
+			IFNULL((rc.rechargeCount / a.count),0) permeability, 
+			IFNULL((r.totalRecharge / rc.rechargeCount),0) arppu,
+			IFNULL(n.count,0) newCount,
+			IFNULL(sn.count,0) newStay,
+			IFNULL((sn.count / n.count),0) newStayRat,
+			IFNULL(a.count,0) activeCount,
+			IFNULL(sa.count,0) activeStay,
+			IFNULL((sa.count / a.count),0) activeStayRat
+		FROM t_dcs_serverinfo i
+		LEFT JOIN (SELECT x.serverid, SUM(x.amount) totalRecharge FROM t_dcs_recharge_${gameid} x WHERE x.serverid = #{serverid} AND x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) r ON i.serverid = r.serverid
+		LEFT JOIN (SELECT DISTINCT x.serverid, count(DISTINCT x.userid) rechargeCount FROM t_dcs_recharge_${gameid} x WHERE	x.serverid = #{serverid} AND x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) rc ON i.serverid = rc.serverid
+		LEFT JOIN (SELECT ix.serverid, count(1) count FROM t_dcs_userinfo_${gameid} ix where ix.serverid = #{serverid} AND ix.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) n ON i.serverid = n.serverid
+		LEFT JOIN (SELECT i1.serverid, COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1, t_dcs_userlogin_${gameid} l1 WHERE i1.serverid = #{serverid} AND i1.userid = l1.userid AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 month), "%Y-%m-%d")) sn ON i.serverid = sn.serverid
+		LEFT JOIN (SELECT l.serverid, COUNT(DISTINCT l.userid) count FROM t_dcs_userlogin_${gameid} l WHERE l.serverid = #{serverid} AND l.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) a ON i.serverid = a.serverid
+		LEFT JOIN (SELECT i1.serverid, COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1 LEFT JOIN t_dcs_userlogin_${gameid} l1 ON  i1.userid = l1.userid AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 month), "%Y-%m-%d") WHERE i1.serverid = #{serverid} AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) sa ON i.serverid = sa.serverid
+		where i.serverid = #{serverid}
+		)LIMIT 1
+	</select>
+	
+	<select id="findGameKpi" parameterType="HashMap" resultType="UserData">
+		(
+		SELECT
+			i.game_name gameName,
+			IFNULL(r.totalRecharge,0) totalRecharge,
+			IFNULL(rc.rechargeCount,0) rechargeCount,
+			IFNULL((rc.rechargeCount / a.count),0) permeability, 
+			IFNULL((r.totalRecharge / rc.rechargeCount),0) arppu,
+			IFNULL(n.count,0) newCount,
+			IFNULL(sn.count,0) newStay,
+			IFNULL((sn.count / n.count),0) newStayRat,
+			IFNULL(a.count,0) activeCount,
+			IFNULL(sa.count,0) activeStay,
+			IFNULL((sa.count / a.count),0) activeStayRat
+		FROM t_dcs_gameinfo i
+		LEFT JOIN (SELECT SUM(x.amount * dr.rate) totalRecharge FROM t_dcs_recharge_${gameid} x LEFT JOIN t_dcs_rate dr ON dr.currency = x.currency WHERE x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) r ON 1 = 1
+		LEFT JOIN (SELECT DISTINCT count(DISTINCT x.userid) rechargeCount FROM t_dcs_recharge_${gameid} x WHERE x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) rc ON 1 = 1
+		LEFT JOIN (SELECT count(1) count FROM t_dcs_userinfo_${gameid} ix WHERE ix.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) n ON 1 = 1
+		LEFT JOIN (SELECT COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1, t_dcs_userlogin_${gameid} l1 WHERE i1.userid = l1.userid AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 day), "%Y-%m-%d")) sn ON 1 = 1 
+		LEFT JOIN (SELECT COUNT(DISTINCT l.userid) count FROM t_dcs_userlogin_${gameid} l WHERE l.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) a ON 1 = 1
+		LEFT JOIN (SELECT COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1 LEFT JOIN t_dcs_userlogin_${gameid} l1 ON  i1.userid = l1.userid AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 day), "%Y-%m-%d") WHERE i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")) sa ON 1 = 1
+		WHERE i.gameid = #{gameid}
+		)LIMIT 1
+	</select>
+	
+	<select id="findGameMonthKpi" parameterType="HashMap" resultType="UserData">
+		(
+		SELECT
+			i.game_name gameName,
+			IFNULL(r.totalRecharge,0) totalRecharge,
+			IFNULL(rc.rechargeCount,0) rechargeCount,
+			IFNULL((rc.rechargeCount / a.count),0) permeability, 
+			IFNULL((r.totalRecharge / rc.rechargeCount),0) arppu,
+			IFNULL(n.count,0) newCount,
+			IFNULL(sn.count,0) newStay,
+			IFNULL((sn.count / n.count),0) newStayRat,
+			IFNULL(a.count,0) activeCount,
+			IFNULL(sa.count,0) activeStay,
+			IFNULL((sa.count / a.count),0) activeStayRat
+		FROM t_dcs_gameinfo i
+		LEFT JOIN (SELECT SUM(x.amount * dr.rate) totalRecharge FROM t_dcs_recharge_${gameid} x LEFT JOIN t_dcs_rate dr ON dr.currency = x.currency WHERE x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) r ON 1 = 1
+		LEFT JOIN (SELECT DISTINCT count(DISTINCT x.userid) rechargeCount FROM t_dcs_recharge_${gameid} x WHERE x.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) rc ON 1 = 1
+		LEFT JOIN (SELECT count(1) count FROM t_dcs_userinfo_${gameid} ix WHERE ix.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) n ON 1 = 1
+		LEFT JOIN (SELECT COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1, t_dcs_userlogin_${gameid} l1 WHERE i1.userid = l1.userid AND i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 month), "%Y-%m-%d")) sn ON 1 = 1 
+		LEFT JOIN (SELECT COUNT(DISTINCT l.userid) count FROM t_dcs_userlogin_${gameid} l WHERE l.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) a ON 1 = 1
+		LEFT JOIN (SELECT COUNT(DISTINCT i1.userid) count FROM t_dcs_userinfo_${gameid} i1 LEFT JOIN t_dcs_userlogin_${gameid} l1 ON  i1.userid = l1.userid AND l1.log_time BETWEEN date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d") AND date_format(date_add(#{date}, interval 2 month), "%Y-%m-%d") WHERE i1.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 month), "%Y-%m-%d")) sa ON 1 = 1
+		WHERE i.gameid = #{gameid}
+		)LIMIT 1
+	</select>
+	
+	<insert id="insert" parameterType="UserLogin" useGeneratedKeys="true"
+		keyProperty="id">
+		CREATE TABLE IF NOT EXISTS t_dcs_userlogin_${gameid} LIKE t_dcs_userlogin;
+		INSERT INTO t_dcs_userlogin_${gameid}
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname,
+			</if>
+			<if test="ip != null and ip != ''">
+				ip,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="logTime != null and logTime != ''">
+				log_time,
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				#{nickname},
+			</if>
+			<if test="ip != null and ip != ''">
+				#{ip},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="logTime != null and logTime != ''">
+				#{logTime},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				#{md5}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE NOT EXISTS
+		(
+			SELECT x.id FROM t_dcs_userlogin_${gameid} x WHERE x.md5 = #{md5}
+		);
+	</insert>
+	
+	<insert id="batchInsert" parameterType="UserLogin" useGeneratedKeys="true"
+		keyProperty="id">
+		CREATE TABLE IF NOT EXISTS t_dcs_userlogin_${gameid} LIKE t_dcs_userlogin;
+		INSERT INTO t_dcs_userlogin_${gameid}
+		(
+			userid,
+			username,
+			nickname,
+			ip,
+			serverid,
+			create_time,
+			log_time,
+			md5
+		)
+		VALUES
+		<foreach collection="list" index="index" item="data" open=""
+		separator="," close="">
+		(
+			#{data.userid},
+			#{data.username},
+			#{data.nickname},
+			#{data.ip},
+			#{data.serverid},
+			#{data.createTime},
+			#{data.logTime},
+			#{data.md5}
+		)
+		</foreach>
+	</insert>
+</mapper>

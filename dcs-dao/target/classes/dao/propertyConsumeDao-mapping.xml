@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.PropertyConsume">
+	<sql id="propertyConsumeColumns">
+		id,
+		userid,
+		username,
+		serverid,
+		type,
+		name,
+		price,
+		consume,
+		amount,
+		create_time createTime,
+		log_time logTime
+	</sql>
+	
+	<select id="countFindList" parameterType="PropertyConsume" resultType="Integer">
+		SELECT
+		COUNT(1) total
+		FROM t_dcs_property_consume_${gameid}
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="type != null and type != ''">
+			AND type = #{type}
+			</if>
+			<if test="name != null and name != ''">
+			AND name = #{name}
+			</if>
+			<if test="price != null and price != ''">
+			AND price = #{price}
+			</if>
+			<if test="consume != null and consume != ''">
+			AND consume = #{consume}
+			</if>
+			<if test="amount != null and amount != ''">
+			AND amount = #{amount}
+			</if>
+			<if test="begin != null and begin != ''">
+			AND log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND log_time &lt; #{end}
+			</if>
+		</where>
+	</select>
+	<select id="findList" parameterType="PropertyConsume" resultType="PropertyConsume">
+		(
+		SELECT
+		<include refid="propertyConsumeColumns" />
+		FROM t_dcs_property_consume_${gameid}
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="type != null and type != ''">
+			AND type = #{type}
+			</if>
+			<if test="name != null and name != ''">
+			AND name = #{name}
+			</if>
+			<if test="price != null and price != ''">
+			AND price = #{price}
+			</if>
+			<if test="consume != null and consume != ''">
+			AND consume = #{consume}
+			</if>
+			<if test="amount != null and amount != ''">
+			AND amount = #{amount}
+			</if>
+			<if test="begin != null and begin != ''">
+			AND log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND log_time &lt; #{end}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="start != null and pageSize != null">
+		LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<insert id="insert" parameterType="PropertyConsume" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_property_consume_${gameid}
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="type != null and type != ''">
+				type,
+			</if>
+			<if test="name != null and name != ''">
+				name,
+			</if>
+			<if test="price != null and price != ''">
+				price,
+			</if>
+			<if test="consume != null and consume != ''">
+				consume,
+			</if>
+			<if test="amount != null and amount != ''">
+				amount,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="logTime != null and logTime != ''">
+				log_time,
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="type != null and type != ''">
+				#{type},
+			</if>
+			<if test="name != null and name != ''">
+				#{name},
+			</if>
+			<if test="price != null and price != ''">
+				#{price},
+			</if>
+			<if test="consume != null and consume != ''">
+				#{consume},
+			</if>
+			<if test="amount != null and amount != ''">
+				#{amount},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="logTime != null and logTime != ''">
+				#{logTime},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				#{md5}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE NOT EXISTS
+		(
+			SELECT x.id FROM t_dcs_property_consume x WHERE x.md5 = #{md5}
+		)
+	</insert>
+	
+	<insert id="batchInsert" parameterType="PropertyConsume" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_property_consume_${gameid}
+		(
+			userid,
+			username,
+			serverid,
+			type,
+			name,
+			price,
+			consume,
+			amount,
+			create_time,
+			log_time,
+			md5
+		)
+		VALUES
+		<foreach collection="list" index="index" item="data" open=""
+		separator="," close="">
+		(
+			#{data.userid},
+			#{data.username},
+			#{data.serverid},
+			#{data.type},
+			#{data.name},
+			#{data.price},
+			#{data.consume},
+			#{data.amount},
+			#{data.createTime},
+			#{data.logTime},
+			#{data.md5}
+		)
+		</foreach>
+	</insert>
+</mapper>

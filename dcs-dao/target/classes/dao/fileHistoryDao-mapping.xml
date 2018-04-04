@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.FileHistory">
+	<cache flushInterval="600000"/>
+	<sql id="fileHistoryColumns">
+		id,
+		path,
+		md5,
+		account,
+		serverid,
+		date_time dateTime,
+		is_finish isFinish,
+		create_time createTime
+	</sql>
+	
+	<select id="countFindList" resultType="Integer" parameterType="ServerInfo">
+	(SELECT
+	COUNT(1)
+	FROM t_dcs_file_history
+	)
+	</select>
+	
+	<select id="findList" resultType="FileHistory" parameterType="FileHistory">
+	(SELECT
+	<include refid="fileHistoryColumns" />
+	FROM t_dcs_file_history
+	<where>
+		<if test="account != null and account != ''">
+			AND account in (${account})
+		</if>
+	</where>
+	ORDER BY create_time DESC
+	)
+	<if test="start != null and pageSize != null and pageSize != 0">
+	LIMIT #{start}, #{pageSize}
+	</if>
+	</select>
+	
+	<select id="findOne" resultType="FileHistory" parameterType="FileHistory">
+	(SELECT
+	<include refid="fileHistoryColumns" />
+	FROM t_dcs_file_history
+	WHERE
+		path = #{path}
+	AND
+		md5 = #{md5}
+	) LIMIT 1
+	</select>
+	
+	<select id="findByMd5" resultType="FileHistory" parameterType="FileHistory">
+	(SELECT
+	<include refid="fileHistoryColumns" />
+	FROM t_dcs_file_history
+	WHERE
+		md5 = #{md5}
+	) LIMIT 1
+	</select>
+	
+	<insert id="insert" parameterType="FileHistory" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_dcs_file_history
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="path != null and path != ''">
+				path,
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5,
+			</if>
+			<if test="account != null and account != ''">
+				account,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="isFinish != null and isFinish != ''">
+				is_finish,
+			</if>
+			<if test="dateTime != null and dateTime != ''">
+				date_time,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="path != null and path != ''">
+				#{path},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				#{md5},
+			</if>
+			<if test="account != null and account != ''">
+				#{account},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="isFinish != null and isFinish != ''">
+				#{isFinish},
+			</if>
+			<if test="dateTime != null and dateTime != ''">
+				#{dateTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE NOT EXISTS
+		(
+			SELECT x.id FROM t_dcs_file_history x WHERE x.md5 = #{md5}
+		)
+	</insert>
+	
+	<update id="update" parameterType="FileHistory">
+		UPDATE t_pde_dcs_file_history
+		<set>
+			<if test="path != null and path != ''">
+				path = #{path},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5 = #{md5},
+			</if>
+			<if test="account != null and account != ''">
+				account = #{account},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid = #{serverid},
+			</if>
+			<if test="isFinish != null and isFinish != ''">
+				is_finish = #{isFinish},
+			</if>
+			<if test="dateTime != null and dateTime != ''">
+				date_time = #{dateTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime}
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+</mapper>

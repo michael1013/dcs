@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.ServerInfo">
+	<cache flushInterval="600000"/>
+	<sql id="serverInfoColumns">
+		id,
+		gameid,
+		game_name gameName,
+		serverid,
+		server_name serverName,
+		open_time openTime,
+		close_time closeTime,
+		integrate_time integrateTime,
+		create_time createTime
+	</sql>
+	
+	<select id="countFindList" resultType="Integer" parameterType="ServerInfo">
+	(SELECT
+	COUNT(1)
+	FROM t_dcs_serverinfo
+	<where>
+		<if test="gameid != null and gameid != ''">
+		AND gameid = #{gameid}
+		</if>
+		<if test="serverid != null and serverid != ''">
+		AND serverid = #{serverid}
+		</if>
+		<if test="sort != null and sort != ''">
+			<if test="begin != null and begin != ''">
+			AND ${sort} &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND ${sort} &lt; #{end}
+			</if>
+		</if>
+	</where>
+	)
+	</select>
+	
+	<select id="findOne" resultType="ServerInfo" parameterType="ServerInfo">
+	SELECT
+	<include refid="serverInfoColumns" />
+	FROM t_dcs_serverinfo
+	<where>
+		<if test="gameid != null and gameid != ''">
+		AND gameid = #{gameid}
+		</if>
+		<if test="serverid != null and serverid != ''">
+		AND serverid = #{serverid}
+		</if>
+	</where>
+	</select>
+	
+	<select id="findList" resultType="ServerInfo" parameterType="ServerInfo">
+	(SELECT
+	<include refid="serverInfoColumns" />
+	FROM t_dcs_serverinfo
+	<where>
+		<if test="gameid != null and gameid != ''">
+		AND gameid = #{gameid}
+		</if>
+		<if test="serverid != null and serverid != ''">
+		AND serverid = #{serverid}
+		</if>
+		<if test="sort != null and sort != ''">
+			<if test="begin != null and begin != ''">
+			AND ${sort} &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND ${sort} &lt; #{end}
+			</if>
+		</if>
+	</where>
+	<if test="orderBy != null and orderBy != ''">
+		ORDER BY ${orderBy}
+	</if>
+	)
+	<if test="start != null and pageSize != null and pageSize != 0">
+	LIMIT #{start}, #{pageSize}
+	</if>
+	</select>
+	
+	<insert id="insert" parameterType="ServerInfo" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_dcs_serverinfo
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="gameid != null and gameid != ''">
+				gameid,
+			</if>
+			<if test="gameName != null and gameName != ''">
+				game_name,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="serverName != null and serverName != ''">
+				server_name,
+			</if>
+			<if test="openTime != null and openTime != ''">
+				open_time,
+			</if>
+			<if test="closeTime != null and closeTime != ''">
+				close_time,
+			</if>
+			<if test="integrateTime != null and integrateTime != ''">
+				integrate_time,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="gameid != null and gameid != ''">
+				#{gameid},
+			</if>
+			<if test="gameName != null and gameName != ''">
+				#{gameName},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="serverName != null and serverName != ''">
+				#{serverName},
+			</if>
+			<if test="openTime != null and openTime != ''">
+				#{openTime},
+			</if>
+			<if test="closeTime != null and closeTime != ''">
+				#{closeTime},
+			</if>
+			<if test="integrateTime != null and integrateTime != ''">
+				#{integrateTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterType="ServerInfo">
+		UPDATE t_dcs_serverinfo
+		<set>
+			<if test="gameid != null and gameid != ''">
+				gameid = #{gameid},
+			</if>
+			<if test="gameName != null and gameName != ''">
+				game_name = #{gameName},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid = #{serverid},
+			</if>
+			<if test="serverName != null and serverName != ''">
+				server_name = #{serverName},
+			</if>
+			<if test="openTime != null and openTime != ''">
+				open_time = #{openTime},
+			</if>
+			<if test="closeTime != null and closeTime != ''">
+				close_time = #{closeTime},
+			</if>
+			<if test="integrateTime != null and integrateTime != ''">
+				integrate_time = #{integrateTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime}
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC  
+    "-//mybatis.org//DTD Config 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+	<typeAliases>
+		<typeAlias type="java.lang.Integer" alias="Integer" />
+		<typeAlias type="java.lang.String" alias="String" />
+		<typeAlias type="java.util.HashMap" alias="HashMap" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Config" alias="Config" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Result" alias="Result" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.UserLogin" alias="UserLogin" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Snapshot" alias="Snapshot" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Recharge" alias="Recharge" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.RechargeRank" alias="RechargeRank" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.PropertyConsume" alias="PropertyConsume" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.PropertyIncrease" alias="PropertyIncrease" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Property" alias="Property" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.CoinConsume" alias="CoinConsume" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.CoinIncrease" alias="CoinIncrease" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.GameInfo" alias="GameInfo" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.ServerInfo" alias="ServerInfo" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.UserData" alias="UserData" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.UserInfo" alias="UserInfo" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.CurrencyRate" alias="CurrencyRate" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.ApplePay" alias="ApplePay" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.AppVersion" alias="AppVersion" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.LoginLog" alias="LoginLog" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.FileHistory" alias="FileHistory" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.User" alias="User" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.Password" alias="Password" />
+		
+		<typeAlias type="cn.gnetop.dcs.dao.schema.AdminUser" alias="AdminUser" />
+		<typeAlias type="cn.gnetop.dcs.dao.schema.AdminPassword" alias="AdminPassword" />
+	</typeAliases>
+	
+	<mappers>
+         <!-- 
+          <mapper class="cn.gnetop.dcs.dao.mapper.UserMapper"></mapper>  
+          -->
+         <package name="cn.gnetop.dcs.dao.mapper"/>
+    </mappers>
+</configuration>

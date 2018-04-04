@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.UserData">
+	<sql id="userDataColumns">
+		id,
+		device_count deviceCount,
+		increase,
+		trans_rate transRate,
+		second_day_stay secondDayStay,
+		third_day_stay thirdDayStay,
+		week_stay
+		weekStay,
+		second_week_stay secondWeekStay,
+		month_stay monthStay,
+		first_login_time firstLoginTime,
+		last_login_time lastLoginTime,
+		user_total_sum userTotalSum,
+		effective_count effectiveCount,
+		paid_user_sum paidUserSum,
+		payment_rate paymentRate,
+		arpu,
+		arppu,
+		create_time createTime,
+	</sql>
+	<insert id="insert" parameterType="ServerInfo" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_dcs_userdata
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="deviceCount != null and deviceCount != ''">
+				device_count,
+			</if>
+			<if test="increase != null and increase != ''">
+				increase,
+			</if>
+			<if test="transRate != null and transRate != ''">
+				trans_rate,
+			</if>
+			<if test="secondDayStay != null and secondDayStay != ''">
+				second_day_stay,
+			</if>
+			<if test="thirdDayStay != null and thirdDayStay != ''">
+				third_day_stay,
+			</if>
+			<if test="weekStay != null and weekStay != ''">
+				week_stay,
+			</if>
+			<if test="secondWeekStay != null and secondWeekStay != ''">
+				second_week_stay,
+			</if>
+			<if test="monthStay != null and monthStay != ''">
+				month_stay,
+			</if>
+			<if test="firstLoginTime != null and firstLoginTime != ''">
+				first_login_time,
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				last_login_time ,
+			</if>
+			<if test="userTotalSum != null and userTotalSum != ''">
+				user_total_sum,
+			</if>
+			<if test="effectiveCount != null and effectiveCount != ''">
+				effective_count,
+			</if>
+			<if test="paidUserSum != null and paidUserSum != ''">
+				paid_user_sum,
+			</if>
+			<if test="paymentRate != null and paymentRate != ''">
+				payment_rate,
+			</if>
+			<if test="arpu != null and arpu != ''">
+				arpu,
+			</if>
+			<if test="arppu != null and arppu != ''">
+				arppu,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="deviceCount != null and deviceCount != ''">
+				#{deviceCount},
+			</if>
+			<if test="increase != null and increase != ''">
+				#{increase},
+			</if>
+			<if test="transRate != null and transRate != ''">
+				#{transRate},
+			</if>
+			<if test="secondDayStay != null and secondDayStay != ''">
+				#{secondDayStay},
+			</if>
+			<if test="thirdDayStay != null and thirdDayStay != ''">
+				#{thirdDayStay},
+			</if>
+			<if test="weekStay != null and weekStay != ''">
+				#{weekStay},
+			</if>
+			<if test="secondWeekStay != null and secondWeekStay != ''">
+				#{secondWeekStay},
+			</if>
+			<if test="monthStay != null and monthStay != ''">
+				#{monthStay},
+			</if>
+			<if test="firstLoginTime != null and firstLoginTime != ''">
+				#{firstLoginTime},
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				#{lastLoginTime },
+			</if>
+			<if test="userTotalSum != null and userTotalSum != ''">
+				#{userTotalSum},
+			</if>
+			<if test="effectiveCount != null and effectiveCount != ''">
+				#{effectiveCount},
+			</if>
+			<if test="paidUserSum != null and paidUserSum != ''">
+				#{paidUserSum},
+			</if>
+			<if test="paymentRate != null and paymentRate != ''">
+				#{paymentRate},
+			</if>
+			<if test="arpu != null and arpu != ''">
+				#{arpu},
+			</if>
+			<if test="arppu != null and arppu != ''">
+				#{arppu},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+
+</mapper>

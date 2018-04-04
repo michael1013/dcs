@@ -1,0 +1,8 @@
+cn\gnetop\pde\server\userservice\UserService.class
+cn\gnetop\pde\server\userservice\UserServiceImpl.class
+cn\gnetop\pde\server\userservice\schema\User.class
+cn\gnetop\pde\server\userservice\req\GetUserInfoReq.class
+cn\gnetop\pde\server\dao\UserDaoImpl.class
+cn\gnetop\pde\server\userservice\handler\GetUserInfoHandler.class
+cn\gnetop\pde\server\userservice\rsp\GetUserInfoRsp.class
+cn\gnetop\pde\server\dao\UserDao.class

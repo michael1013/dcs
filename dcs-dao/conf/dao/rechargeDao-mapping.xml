@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.Recharge">
+	<sql id="rechargeColumns">
+		id,
+		channel,
+		userid,
+		username,
+		orderid,
+		serverid,
+		ip,
+		amount,
+		currency,
+		create_time createTime,
+		log_time logTime
+	</sql>
+	
+	<select id="findRank" parameterType="Recharge" resultType="RechargeRank">
+		SELECT
+		r.userid,
+		r.serverid,
+		SUM(r.amount * dr.rate) amount
+		FROM t_dcs_recharge_${gameid} r
+		LEFT JOIN t_dcs_rate dr ON dr.currency = r.currency
+		<where> 
+			<if test="serverid != null and serverid != ''">
+				AND r.serverid = #{serverid}
+			</if>
+			<if test="begin != null and begin != ''">
+				AND r.log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+				AND r.log_time &lt; #{end}
+			</if>
+		</where>
+		GROUP BY r.userid
+		ORDER BY amount DESC
+	</select>
+	
+	<select id="countFindList" parameterType="Recharge" resultType="Integer">
+		SELECT
+		COUNT(1) total
+		FROM t_dcs_recharge_${gameid}
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="channel != null and channel != ''">
+			AND channel = #{channel}
+			</if>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="orderid != null and orderid != ''">
+			AND orderid = #{orderid}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+			<if test="begin != null and begin != ''">
+			AND log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND log_time &lt; #{end}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" parameterType="Recharge" resultType="Recharge">
+		(
+		SELECT
+		<include refid="rechargeColumns" />
+		FROM t_dcs_recharge_${gameid}
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="channel != null and channel != ''">
+			AND channel = #{channel}
+			</if>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="orderid != null and orderid != ''">
+			AND orderid = #{orderid}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+			<if test="begin != null and begin != ''">
+			AND log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND log_time &lt; #{end}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="start != null and pageSize != null">
+		LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<select id="findTotalList" parameterType="Recharge" resultType="Recharge">
+		(
+		SELECT
+		<include refid="rechargeColumns" />
+		FROM t_dcs_recharge_total
+		<where>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="serverid != null and serverid != ''">
+			AND serverid = #{serverid}
+			</if>
+			<if test="channel != null and channel != ''">
+			AND channel = #{channel}
+			</if>
+			<if test="userid != null and userid != ''">
+			AND userid = #{userid}
+			</if>
+			<if test="orderid != null and orderid != ''">
+			AND orderid = #{orderid}
+			</if>
+			<if test="ip != null and ip != ''">
+			AND ip = #{ip}
+			</if>
+			<if test="begin != null and begin != ''">
+			AND log_time &gt; #{begin}
+			</if>
+			<if test="end != null and end != ''">
+			AND log_time &lt; #{end}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="start != null and pageSize != null">
+		LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<select id="findRechargeData" parameterType="HashMap" resultType="HashMap">
+		SELECT
+			r.serverid,
+			COUNT(DISTINCT r.userid) count,
+			CAST(SUM(r.amount * dr.rate) AS DECIMAL(20,2)) total
+		FROM t_dcs_recharge_${gameid} r
+		LEFT JOIN t_dcs_rate dr ON r.currency = dr.currency
+		<where>
+			<if test="serverid != null and serverid != ''">
+				r.serverid = #{serverid}
+			</if>
+			<choose>
+				<when test="week != null and week != ''">
+					AND r.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 7 day), "%Y-%m-%d")
+				</when>
+				<otherwise>
+					AND r.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<select id="findGameRechargeData" parameterType="HashMap" resultType="HashMap">
+		SELECT
+			COUNT(DISTINCT r.userid) count,
+			CAST(SUM(r.amount * dr.rate) AS DECIMAL(20,2)) total
+		FROM t_dcs_recharge_${gameid} r
+		LEFT JOIN t_dcs_rate dr ON r.currency = dr.currency
+		<where>
+			<choose>
+				<when test="week != null and week != ''">
+					AND r.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 7 day), "%Y-%m-%d")
+				</when>
+				<otherwise>
+					AND r.log_time BETWEEN #{date} AND date_format(date_add(#{date}, interval 1 day), "%Y-%m-%d")
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="Recharge" useGeneratedKeys="true"
+		keyProperty="id">
+		CREATE TABLE IF NOT EXISTS t_dcs_recharge_${gameid} LIKE t_dcs_recharge;
+		INSERT INTO t_dcs_recharge_${gameid}
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="channel != null and channel != ''">
+				channel,
+			</if>
+			<if test="orderid != null and orderid != ''">
+				orderid,
+			</if>
+			<if test="ip != null and ip != ''">
+				ip,
+			</if>
+			<if test="amount != null and amount != ''">
+				amount,
+			</if>
+			<if test="currency != null and currency != ''">
+				currency,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="logTime != null and logTime != ''">
+				log_time,
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="channel != null and channel != ''">
+				#{channel},
+			</if>
+			<if test="orderid != null and orderid != ''">
+				#{orderid},
+			</if>
+			<if test="ip != null and ip != ''">
+				#{ip},
+			</if>
+			<if test="amount != null and amount != ''">
+				#{amount},
+			</if>
+			<if test="currency != null and currency != ''">
+				#{currency},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="logTime != null and logTime != ''">
+				#{logTime},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				#{md5}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE NOT EXISTS
+		(
+			SELECT x.id FROM t_dcs_recharge_${gameid} x WHERE x.md5 = #{md5}
+		)
+	</insert>
+	
+	<insert id="batchInsert" parameterType="Recharge" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_recharge_${gameid}
+		(				
+			userid,
+			serverid,
+			channel,
+			orderid,
+			ip,
+			amount,
+			currency,
+			create_time,
+			log_time,
+			md5
+		)
+		VALUES
+		<foreach collection="list" index="index" item="data" open=""
+		separator="," close="">
+		(
+			#{data.userid},
+			#{data.serverid},
+			#{data.channel},
+			#{data.orderid},
+			#{data.ip},
+			#{data.amount},
+			#{data.currency},
+			#{data.createTime},
+			#{data.logTime},
+			#{data.md5}
+		)
+		</foreach>
+	</insert>
+</mapper>

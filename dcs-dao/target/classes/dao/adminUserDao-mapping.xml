@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.AdminUser">
+	<sql id="adminUserColumns">
+		id,
+		username,
+		nickname,
+		last_login_ip lastLoginIp,
+		create_time createTime,
+		update_time updateTime,
+		last_login_time lastLoginTime
+	</sql>
+	<select id="findOne" parameterType="AdminUser" resultType="AdminUser">
+		(
+		SELECT
+		<include refid="adminUserColumns" />
+		FROM
+			t_admin_user
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="username != null and username != ''">
+				AND username = #{username}
+			</if>
+		</where>
+		) LIMIT 1
+	</select>
+	<select id="findList" parameterType="AdminUser" resultType="AdminUser">
+		SELECT
+		<include refid="adminUserColumns" />
+		FROM
+			t_admin_user
+		WHERE
+	</select>
+	<insert id="insert" parameterType="AdminUser" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_admin_user
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				#{nickname},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="AdminUser">
+		UPDATE t_admin_user
+		<set>
+			<if test="nickname != null and nickname != ''">
+				nickname = #{nickname},
+			</if>
+			<if test="lastLoginIp != null and lastLoginIp != ''">
+				last_login_ip = #{lastLoginIp},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time= #{updateTime},
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				last_login_time= #{lastLoginTime},
+			</if>
+		</set>
+		WHERE
+		id = #{id}
+	</update>
+</mapper>

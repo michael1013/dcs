@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	
+	<display-name>dcs-web</display-name>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+    		classpath*:*/applicationContext*.xml,
+    		classpath:spring-mybatis.xml
+    	</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:log4j.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>gnetop.dcs.web</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>cn.gnetop.dcs.system.listener.DcsContextLoaderListener</listener-class>
+	</listener>
+
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.jpg</url-pattern>
+		<url-pattern>*.png</url-pattern>
+		<url-pattern>*.gif</url-pattern>
+		<url-pattern>*.bmp</url-pattern>
+		<url-pattern>*.css</url-pattern>
+		<url-pattern>*.js</url-pattern>
+		<url-pattern>*.ttf</url-pattern>
+		<url-pattern>*.svg</url-pattern>
+		<url-pattern>*.eot</url-pattern>
+		<url-pattern>*.woff</url-pattern>
+		<url-pattern>*.map</url-pattern>
+		<url-pattern>*.html</url-pattern>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>dcsServlet</servlet-name>
+		<servlet-class>cn.gnetop.dcs.system.servlet.DcsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dcsServlet</servlet-name>
+		<url-pattern>/json/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>docServlet</servlet-name>
+		<servlet-class>cn.gnetop.dcs.web.servlet.DocServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>docServlet</servlet-name>
+		<url-pattern>/doc</url-pattern>
+	</servlet-mapping>
+	
+	<distributable/>
+</web-app>

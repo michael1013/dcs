@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.Snapshot">
+	<sql id="snapshotColumns">
+		userid,
+		serverid,
+		amount,
+		create_time createTime
+	</sql>
+	<insert id="insert" parameterType="Snapshot" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_snapshot
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="amount != null and amount != ''">
+				amount,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="amount != null and amount != ''">
+				#{amount},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+</mapper>

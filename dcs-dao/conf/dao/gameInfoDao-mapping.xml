@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.GameInfo">
+	<cache flushInterval="600000" />
+	<sql id="gameInfoColumns">
+		id,
+		gameid,
+		game_name gameName,
+		pack_name packName,
+		account,
+		create_time createTime
+	</sql>
+	<select id="findList" parameterType="GameInfo" resultType="GameInfo">
+		SELECT
+		<include refid="gameInfoColumns" />
+		FROM t_dcs_gameinfo
+	</select>
+	<insert id="insert" parameterType="GameInfo" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_gameinfo
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="gameid != null and gameid != ''">
+				gameid,
+			</if>
+			<if test="gameName != null and gameName != ''">
+				game_name,
+			</if>
+			<if test="packName != null and packName != ''">
+				pack_name,
+			</if>
+			<if test="account != null and account != ''">
+				account,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time
+			</if>
+		</trim>
+		VALUES
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="gameid != null and gameid != ''">
+				#{gameid},
+			</if>
+			<if test="gameName != null and gameName != ''">
+				#{gameName},
+			</if>
+			<if test="packName != null and packName != ''">
+				#{packName},
+			</if>
+			<if test="account != null and account != ''">
+				#{account},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime}
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="GameInfo">
+		UPDATE into t_dcs_gameinfo
+		<set>
+			<if test="gameid != null and gameid != ''">
+				gameid = #{gameid},
+			</if>
+			<if test="gameName != null and gameName != ''">
+				game_name = #{gameName},
+			</if>
+			<if test="packName != null and packName != ''">
+				pack_name = #{packName},
+			</if>
+			<if test="account != null and account != ''">
+				account = #{account},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime}
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+</mapper>

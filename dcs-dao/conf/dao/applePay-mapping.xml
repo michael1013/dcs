@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.ApplePay">
+	<sql id="applePayColumns">
+		id,
+		transid,
+		orderid,
+		channel,
+		appid,
+		bundleid,
+		productid,
+		consumable,
+		productname,
+		price,
+		currency,
+		userid,
+		username,
+		game_server_id gameServerId,
+		status,
+		sandbox,
+		createat,
+		sign,
+		delivery_flag deliveryFlag,
+		shipping_url shippingUrl,
+		receipt,
+		extra,
+		create_time createTime,
+		update_time updateTime,
+		del_flag delFlag		
+	</sql>
+	
+	<select id="findOne" parameterType="ApplePay" resultType="ApplePay">
+		(SELECT 
+		<include refid="applePayColumns"/>
+		FROM t_dcs_apple_pay
+		<where>
+			<if test="id != null and id != ''">AND `id` = #{id}</if>
+			<if test="bundleid != null and bundleid != ''">AND `bundleid` = #{bundleid}</if>
+			<if test="transid != null and transid != ''">AND `transid` = #{transid}</if>
+			<if test="orderid != null and orderid != ''">AND `orderid` = #{orderid}</if>
+			<if test="channel != null and channel != ''">AND `channel` = #{channel}</if>
+			<if test="appid != null and appid != ''">AND `appid` = #{appid}</if>
+			<if test="productid != null and productid != ''">AND `productid` = #{productid}</if>
+			<if test="consumable != null">AND `consumable` = #{consumable}</if>
+			<if test="productname != null and productname != ''">AND `productname` = #{productname}</if>
+			<if test="price != null">AND `price` = #{price}</if>
+			<if test="currency != null and currency != ''">AND `currency` = #{currency}</if>
+			<if test="userid != null and userid != ''">AND `userid` = #{userid}</if>
+			<if test="username != null and username != ''">AND `username` = #{username}</if>
+			<if test="gameServerId != null and gameServerId != ''">AND `game_server_id` = #{gameServerId}</if>
+			<if test="status != null and status != ''">AND `status` = #{status}</if>
+			<if test="sandbox != null">AND `sandbox` = #{sandbox}</if>
+			<if test="createat != null and createat != ''">AND `createat` = #{createat}</if>
+			<if test="sign != null and sign != ''">AND `sign` = #{sign}</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">AND `delivery_flag` = #{deliveryFlag}</if>
+			<if test="shippingUrl != null and shippingUrl != ''">AND `shipping_url` = #{shippingUrl}</if>
+			<if test="receipt != null and receipt != ''">AND `receipt` = #{receipt}</if>
+			<if test="extra != null and extra != ''">AND `extra` = #{extra}</if>
+
+			<if test="createTime != null">AND `create_time` = #{createTime}</if>
+			<if test="updateTime != null">AND `update_time` = #{updateTime}</if>
+			<if test="delFlag != null">AND `del_flag` = #{delFlag}</if>
+		</where>
+		)LIMIT 1
+	</select>
+
+	<select id="findList" parameterType="ApplePay" resultType="ApplePay">
+		(SELECT 
+		<include refid="applePayColumns"/>
+		FROM t_dcs_apple_pay t
+		<where>
+			<if test="id != null and id != ''">AND `id` = #{id}</if>
+			<if test="bundleid != null and bundleid != ''">AND `bundleid` = #{bundleid}</if>
+			<if test="transid != null and transid != ''">AND `transid` = #{transid}</if>
+			<if test="orderid != null and orderid != ''">AND `orderid` = #{orderid}</if>
+			<if test="channel != null and channel != ''">AND `channel` = #{channel}</if>
+			<if test="appid != null and appid != ''">AND `appid` = #{appid}</if>
+			<if test="productid != null and productid != ''">AND `productid` = #{productid}</if>
+			<if test="consumable != null">AND `consumable` = #{consumable}</if>
+			<if test="productname != null and productname != ''">AND `productname` = #{productname}</if>
+			<if test="price != null">AND `price` = #{price}</if>
+			<if test="currency != null and currency != ''">AND `currency` = #{currency}</if>
+			<if test="userid != null and userid != ''">AND `userid` = #{userid}</if>
+			<if test="username != null and username != ''">AND `username` = #{username}</if>
+			<if test="gameServerId != null and gameServerId != ''">AND `game_server_id` = #{gameServerId}</if>
+			<if test="status != null and status != ''">AND `status` = #{status}</if>
+			<if test="sandbox != null">AND `sandbox` = #{sandbox}</if>
+			<if test="createat != null and createat != ''">AND `createat` = #{createat}</if>
+			<if test="sign != null and sign != ''">AND `sign` = #{sign}</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">AND `delivery_flag` = #{deliveryFlag}</if>
+			<if test="shippingUrl != null and shippingUrl != ''">AND `shipping_url` = #{shippingUrl}</if>
+			<if test="receipt != null and receipt != ''">AND `receipt` = #{receipt}</if>
+			<if test="extra != null and extra != ''">AND `extra` = #{extra}</if>
+
+			<if test="createTime != null">AND `create_time` = #{createTime}</if>
+			<if test="updateTime != null">AND `update_time` = #{updateTime}</if>
+			<if test="delFlag != null">AND `del_flag` = #{delFlag}</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="pageSize != null and pageSize != 0">
+			LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<select id="countFindList" parameterType="ApplePay" resultType="Integer">
+		(SELECT 
+		count(1)
+		FROM t_dcs_apple_pay t
+		<where>
+			<if test="id != null and id != ''">AND `id` = #{id}</if>
+			<if test="bundleid != null and bundleid != ''">AND `bundleid` = #{bundleid}</if>
+			<if test="transid != null and transid != ''">AND `transid` = #{transid}</if>
+			<if test="orderid != null and orderid != ''">AND `orderid` = #{orderid}</if>
+			<if test="channel != null and channel != ''">AND `channel` = #{channel}</if>
+			<if test="appid != null and appid != ''">AND `appid` = #{appid}</if>
+			<if test="productid != null and productid != ''">AND `productid` = #{productid}</if>
+			<if test="consumable != null">AND `consumable` = #{consumable}</if>
+			<if test="productname != null and productname != ''">AND `productname` = #{productname}</if>
+			<if test="price != null">AND `price` = #{price}</if>
+			<if test="currency != null and currency != ''">AND `currency` = #{currency}</if>
+			<if test="userid != null and userid != ''">AND `userid` = #{userid}</if>
+			<if test="username != null and username != ''">AND `username` = #{username}</if>
+			<if test="gameServerId != null and gameServerId != ''">AND `game_server_id` = #{gameServerId}</if>
+			<if test="status != null and status != ''">AND `status` = #{status}</if>
+			<if test="sandbox != null">AND `sandbox` = #{sandbox}</if>
+			<if test="createat != null and createat != ''">AND `createat` = #{createat}</if>
+			<if test="sign != null and sign != ''">AND `sign` = #{sign}</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">AND `delivery_flag` = #{deliveryFlag}</if>
+			<if test="shippingUrl != null and shippingUrl != ''">AND `shipping_url` = #{shippingUrl}</if>
+			<if test="receipt != null and receipt != ''">AND `receipt` = #{receipt}</if>
+			<if test="extra != null and extra != ''">AND `extra` = #{extra}</if>
+
+			<if test="createTime != null">AND `create_time` = #{createTime}</if>
+			<if test="updateTime != null">AND `update_time` = #{updateTime}</if>
+			<if test="delFlag != null">AND `del_flag` = #{delFlag}</if>
+		</where>
+		)
+	</select>
+	
+	<insert id="insert" parameterType="ApplePay" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_apple_pay
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="id != null and id != ''">`id`,</if>
+			<if test="bundleid != null and bundleid != ''">`bundleid`,</if>
+			<if test="transid != null and transid != ''">`transid`,</if>
+			<if test="orderid != null and orderid != ''">`orderid`,</if>
+			<if test="channel != null and channel != ''">`channel`,</if>
+			<if test="appid != null and appid != ''">`appid`,</if>
+			<if test="productid != null and productid != ''">`productid`,</if>
+			<if test="consumable != null">`consumable`,</if>
+			<if test="productname != null and productname != ''">`productname`,</if>
+			<if test="price != null">`price`,</if>
+			<if test="currency != null and currency != ''">`currency`,</if>
+			<if test="userid != null and userid != ''">`userid`,</if>
+			<if test="username != null and username != ''">`username`,</if>
+			<if test="gameServerId != null and gameServerId != ''">`game_server_id`,</if>
+			<if test="status != null and status != ''">`status`,</if>
+			<if test="sandbox != null">`sandbox`,</if>
+			<if test="createat != null and createat != ''">`createat`,</if>
+			<if test="sign != null and sign != ''">`sign`,</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">`delivery_flag`,</if>
+			<if test="shippingUrl != null and shippingUrl != ''">`shipping_url`,</if>
+			<if test="receipt != null and receipt != ''">`receipt`,</if>
+			<if test="extra != null and extra != ''">`extra`,</if>
+
+			<if test="createTime != null">`create_time`,</if>
+			<if test="updateTime != null">`update_time`,</if>
+			<if test="delFlag != null">`del_flag`,</if>
+		</trim>
+		SELECT 
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="id != null and id != ''">#{id},</if>
+			<if test="bundleid != null and bundleid != ''">#{bundleid},</if>
+			<if test="transid != null and transid != ''">#{transid},</if>
+			<if test="orderid != null and orderid != ''">#{orderid},</if>
+			<if test="channel != null and channel != ''">#{channel},</if>
+			<if test="appid != null and appid != ''">#{appid},</if>
+			<if test="productid != null and productid != ''">#{productid},</if>
+			<if test="consumable != null">#{consumable},</if>
+			<if test="productname != null and productname != ''">#{productname},</if>
+			<if test="price != null">#{price},</if>
+			<if test="currency != null and currency != ''">#{currency},</if>
+			<if test="userid != null and userid != ''">#{userid},</if>
+			<if test="username != null and username != ''">#{username},</if>
+			<if test="gameServerId != null and gameServerId != ''">#{gameServerId},</if>
+			<if test="status != null and status != ''">#{status},</if>
+			<if test="sandbox != null">#{sandbox},</if>
+			<if test="createat != null and createat != ''">#{createat},</if>
+			<if test="sign != null and sign != ''">#{sign},</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">#{deliveryFlag},</if>
+			<if test="shippingUrl != null and shippingUrl != ''">#{shippingUrl},</if>
+			<if test="receipt != null and receipt != ''">#{receipt},</if>
+			<if test="extra != null and extra != ''">#{extra},</if>
+
+			<if test="createTime != null">#{createTime},</if>
+			<if test="updateTime != null">#{updateTime},</if>
+			<if test="delFlag != null">#{delFlag},</if>
+		</trim>
+		FROM DUAL WHERE NOT EXISTS
+		(
+			SELECT transid FROM t_dcs_apple_pay WHERE transid = #{transid}
+		)
+	</insert>
+	
+	<update id="update" parameterType="ApplePay">
+		UPDATE t_dcs_apple_pay
+		<trim prefix="SET" suffixOverrides="," suffix="">
+			<if test="bundleid != null and bundleid != ''">`bundleid` = #{bundleid}</if>
+			<if test="transid != null and transid != ''">`transid` = #{transid}</if>
+			<if test="orderid != null and orderid != ''">`orderid` = #{orderid}</if>
+			<if test="channel != null and channel != ''">`channel` = #{channel}</if>
+			<if test="appid != null and appid != ''">`appid` = #{appid}</if>
+			<if test="productid != null and productid != ''">`productid` = #{productid}</if>
+			<if test="consumable != null">`consumable` = #{consumable}</if>
+			<if test="productname != null and productname != ''">`productname` = #{productname}</if>
+			<if test="price != null">`price` = #{price}</if>
+			<if test="currency != null and currency != ''">`currency` = #{currency}</if>
+			<if test="userid != null and userid != ''">`userid` = #{userid}</if>
+			<if test="username != null and username != ''">`username` = #{username}</if>
+			<if test="gameServerId != null and gameServerId != ''">`game_server_id` = #{gameServerId}</if>
+			<if test="status != null and status != ''">`status` = #{status}</if>
+			<if test="sandbox != null">`sandbox` = #{sandbox}</if>
+			<if test="createat != null and createat != ''">`createat` = #{createat}</if>
+			<if test="sign != null and sign != ''">`sign` = #{sign}</if>
+			<if test="deliveryFlag != null and deliveryFlag != ''">`delivery_flag` = #{deliveryFlag}</if>
+			<if test="shippingUrl != null and shippingUrl != ''">`shipping_url` = #{shippingUrl}</if>
+			<if test="receipt != null and receipt != ''">`receipt` = #{receipt}</if>
+			<if test="extra != null and extra != ''">`extra` = #{extra}</if>
+
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+			<if test="delFlag != null">`del_flag` = #{delFlag}</if>
+		</trim>
+		WHERE
+			id = #{id}
+	</update>
+</mapper>

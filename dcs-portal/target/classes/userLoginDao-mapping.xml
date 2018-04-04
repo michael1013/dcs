@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.UserLogin">
+	<sql id="userLoginColumns">
+		id,
+		userid,
+		username,
+		nickname,
+		ip,
+		serverid,
+		create_time createTime,
+		log_time logTime
+	</sql>
+	
+	<insert id="insert" parameterType="UserLogin" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_dcs_userlogin_${gameid}
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="userid != null and userid != ''">
+				userid,
+			</if>
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname,
+			</if>
+			<if test="ip != null and ip != ''">
+				ip,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="logTime != null and logTime != ''">
+				log_time,
+			</if>
+			<if test="md5 != null and md5 != ''">
+				md5
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="userid != null and userid != ''">
+				#{userid},
+			</if>
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				#{nickname},
+			</if>
+			<if test="ip != null and ip != ''">
+				#{ip},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="logTime != null and logTime != ''">
+				#{logTime},
+			</if>
+			<if test="md5 != null and md5 != ''">
+				#{md5}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE NOT EXISTS
+		(
+			SELECT x.id FROM t_dcs_userlogin_${gameid} x WHERE x.md5 = #{md5}
+		);
+	</insert>
+	
+	<insert id="batchInsert" parameterType="UserLogin" useGeneratedKeys="true"
+		keyProperty="id">
+		CREATE TABLE IF NOT EXISTS t_dcs_userlogin_${gameid} LIKE t_dcs_userlogin;
+		INSERT INTO t_dcs_userlogin_${gameid}
+		(
+			userid,
+			username,
+			nickname,
+			ip,
+			serverid,
+			create_time,
+			log_time,
+			md5
+		)
+		VALUES
+		<foreach collection="list" index="index" item="data" open=""
+		separator="," close="">
+		(
+			#{data.userid},
+			#{data.username},
+			#{data.nickname},
+			#{data.ip},
+			#{data.serverid},
+			#{data.createTime},
+			#{data.logTime},
+			#{data.md5}
+		)
+		</foreach>
+	</insert>
+</mapper>

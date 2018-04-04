@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.Config">
+	<sql id="configColumns">
+		id,
+		`key`,
+		`value`,
+		def,
+		is_open isOpen
+	</sql>
+	<select id="findAll" resultType="Config">
+		SELECT
+		<include refid="configColumns"></include>
+		FROM t_dcs_config
+	</select>
+</mapper>

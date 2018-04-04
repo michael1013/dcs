@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.AppVersion">
+	<sql id="appVersionColumns">
+		id,
+		bundleid,
+		version,
+		channel,
+		create_time createTime,
+		update_time updateTime,
+		del_flag delFlag		
+	</sql>
+	
+	<select id="findOne" parameterType="AppVersion" resultType="AppVersion">
+		(SELECT 
+		<include refid="appVersionColumns"/>
+		FROM t_dcs_app_version
+		<where>
+			<if test="id != null and id != ''">AND `id` = #{id}</if>
+			<if test="bundleid != null and bundleid != ''">AND `bundleid` = #{bundleid}</if>
+			<if test="version != null and version != ''">AND `version` = #{version}</if>
+			<if test="channel != null and channel != ''">AND `channel` = #{channel}</if>
+
+			<if test="createTime != null">AND `create_time` = #{createTime}</if>
+			<if test="updateTime != null">AND `update_time` = #{updateTime}</if>
+			<if test="delFlag != null">AND `del_flag` = #{delFlag}</if>
+		</where>
+		)LIMIT 1
+	</select>
+
+	<select id="findList" parameterType="AppVersion" resultType="AppVersion">
+		(SELECT 
+		<include refid="appVersionColumns"/>
+		FROM t_dcs_app_version
+		<where>
+			<if test="id != null and id != ''">AND `id` = #{id}</if>
+			<if test="bundleid != null and bundleid != ''">AND `bundleid` = #{bundleid}</if>
+			<if test="version != null and version != ''">AND `version` = #{version}</if>
+			<if test="channel != null and channel != ''">AND `channel` = #{channel}</if>
+
+			<if test="createTime != null">AND `create_time` = #{createTime}</if>
+			<if test="updateTime != null">AND `update_time` = #{updateTime}</if>
+			<if test="delFlag != null">AND `del_flag` = #{delFlag}</if>
+		</where>
+		<if test="orderBy != null and orderBy != ''">
+			ORDER BY ${orderBy}
+		</if>
+		)
+		<if test="pageSize != null and pageSize != 0">
+			LIMIT #{start}, #{pageSize}
+		</if>
+	</select>
+	
+	<insert id="insert" parameterType="AppVersion" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dcs_app_version
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="id != null and id != ''">`id`,</if>
+			<if test="bundleid != null and bundleid != ''">`bundleid`,</if>
+			<if test="version != null and version != ''">`version`,</if>
+			<if test="channel != null and channel != ''">`channel`,</if>
+
+			<if test="createTime != null">`create_time`,</if>
+			<if test="updateTime != null">`update_time`,</if>
+			<if test="delFlag != null">`del_flag`,</if>
+		</trim>
+		SELECT 
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="id != null and id != ''">#{id},</if>
+			<if test="bundleid != null and bundleid != ''">#{bundleid},</if>
+			<if test="version != null and version != ''">#{version},</if>
+			<if test="channel != null and channel != ''">#{channel},</if>
+
+			<if test="createTime != null">#{createTime},</if>
+			<if test="updateTime != null">#{updateTime},</if>
+			<if test="delFlag != null">#{delFlag},</if>
+		</trim>
+		FROM DUAL WHERE NOT EXISTS
+		(
+			SELECT id,bundleid,version,channel FROM t_dcs_app_version WHERE bundleid = #{bundleid} AND version = #{version}
+		)
+	</insert>
+	
+	<update id="update" parameterType="AppVersion">
+		UPDATE t_dcs_app_version
+		<trim prefix="SET" suffixOverrides="," suffix="">
+			<if test="bundleid != null and bundleid != ''">`bundleid` = #{bundleid}</if>
+			<if test="version != null and version != ''">`version` = #{version}</if>
+			<if test="channel != null and channel != ''">`channel` = #{channel}</if>
+
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+			<if test="delFlag != null">`del_flag` = #{delFlag}</if>
+		</trim>
+		WHERE
+			id = #{id}
+	</update>
+</mapper>

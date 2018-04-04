@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gnetop.dcs.dao.schema.UserInfo">
+	<sql id="userColumns">
+		userid,
+		username,
+		serverid,
+		nickname,
+		create_time createTime,
+		last_login_time lastLoginTime,
+		update_time updateTime,
+		del_flag delFlag
+	</sql>
+	
+	<select id="findOne" parameterType="UserInfo" resultType="UserInfo">
+		(SELECT 
+		<include refid="userColumns"/>
+		FROM t_dcs_userinfo u
+		<where>
+			<if test="userid != null and userid != ''">
+				AND u.userid = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+				AND u.username = #{username}
+			</if>
+		</where>
+		)LIMIT 1
+	</select>
+	
+	<select id="findUserDataByDate" parameterType="HashMap" resultType="UserData">
+		SELECT DISTINCT
+		count(u.userid),
+		<foreach collection="dateList" index="index" item="date" open=""
+			separator="," close="">
+			count(l${index}.userid)
+		</foreach>
+		FROM t_dcs_userinfo u
+		<foreach collection="dateList" index="index" item="date" open=""
+			separator="" close="">
+		LEFT JOIN t_dcs_userlogin l${index} ON l${index}.create_time between #{date} and date_add(#{date}, interval 1 day)
+		</foreach>
+		<where>
+			<if test="serverid != null and serverid != ''">
+				u.serverid = #{serverid}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="UserInfo" useGeneratedKeys="true"
+		keyProperty="userid">
+		INSERT INTO t_dcs_userinfo
+		<trim prefix="(" suffixOverrides="," suffix=")">
+			<if test="username != null and username != ''">
+				username,
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid,
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname,
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				last_login_time,
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time,
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time,
+			</if>
+			<if test="delFlag != null">
+				del_flag
+			</if>
+		</trim>
+		SELECT
+		<trim prefix="" suffixOverrides="," suffix="">
+			<if test="username != null and username != ''">
+				#{username},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				#{serverid},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				#{nickname},
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				#{lastLoginTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				#{createTime},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				#{updateTime},
+			</if>
+			<if test="delFlag != null">
+				#{delFlag}
+			</if>
+		</trim>
+		FROM DUAL
+		WHERE
+			NOT EXISTS (
+				SELECT
+					userid, username
+				FROM
+					t_dcs_userinfo
+				WHERE
+					username = #{username}
+				<if test="serverid != null and serverid != ''">
+					AND serverid = #{serverid}
+				</if>
+			)
+		LIMIT 1
+	</insert>
+	
+	<update id="update" parameterType="User">
+		UPDATE t_dcs_user SET
+			<if test="nickname != null and nickname != ''">
+				nickname = #{nickname},
+			</if>
+			<if test="serverid != null and serverid != ''">
+				serverid = #{serverid},
+			</if>
+			<if test="lastLoginTime != null and lastLoginTime != ''">
+				last_login_time = #{lastLoginTime},
+			</if>
+			<if test="createTime != null and createTime != ''">
+				create_time = #{createTime},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time = #{updateTime},
+			</if>
+			<if test="delFlag != null">
+				del_flag = #{delFlag}
+			</if>
+		WHERE
+			userid = #{userid}
+	</update>
+</mapper>
